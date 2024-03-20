@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="700.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.pillanalyser.HelloController">
+   <top>
+      <MenuBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="19.0" prefWidth="1000.0" BorderPane.alignment="CENTER">
+         <menus>
+            <Menu mnemonicParsing="false" text="File">
+               <items>
+                  <MenuItem fx:id="openFileMenuItem" mnemonicParsing="false" onAction="#imageFileChooser" text="Open" />
+                  <MenuItem fx:id="exitMenuItem" mnemonicParsing="false" onAction="#exitApplication" text="Exit" />
+               </items>
+            </Menu>
+         </menus>
+      </MenuBar>
+   </top>
+   <right>
+      <VBox prefHeight="648.0" prefWidth="289.0" BorderPane.alignment="CENTER">
+         <children>
+            <ImageView fx:id="mainImageView" fitHeight="300.0" fitWidth="300.0" onMouseClicked="#mouseCoordinatesOnClick" pickOnBounds="true" />
+            <ImageView fx:id="secondaryImageView" fitHeight="300.0" fitWidth="300.0" pickOnBounds="true">
+               <VBox.margin>
+                  <Insets top="25.0" />
+               </VBox.margin>
+            </ImageView>
+         </children>
+         <BorderPane.margin>
+            <Insets right="25.0" top="25.0" />
+         </BorderPane.margin>
+      </VBox>
+   </right>
+</BorderPane>
