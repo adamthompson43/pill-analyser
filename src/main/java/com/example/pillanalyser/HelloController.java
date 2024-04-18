@@ -3,6 +3,7 @@ package com.example.pillanalyser;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Slider;
 import javafx.scene.image.*;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
@@ -20,6 +21,9 @@ public class HelloController {
     private ImageView mainImageView;
     @FXML
     private ImageView secondaryImageView;
+
+    @FXML
+    private Slider toleranceSlider;
 
     @FXML
     private void imageFileChooser() {
@@ -48,6 +52,8 @@ public class HelloController {
             secondaryImageView.setPreserveRatio(true);
             secondaryImageView.setFitWidth(300);
             secondaryImageView.setFitHeight(300);
+
+            greyScaleImage();
         }
 
 
@@ -115,5 +121,10 @@ public class HelloController {
             // Set the greyscale image to the main image view and changes button text
             secondaryImageView.setImage(greyscaleImage);
         }
+    }
+
+    @FXML
+    private void processImage() {
+
     }
 }
