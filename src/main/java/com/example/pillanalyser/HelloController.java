@@ -25,6 +25,8 @@ public class HelloController {
     @FXML
     private Slider toleranceSlider;
 
+    int[] pixels;
+
     @FXML
     private void imageFileChooser() {
         FileChooser fileChooser = new FileChooser();
@@ -40,7 +42,7 @@ public class HelloController {
 
         //display image in image view
         if (imageFile != null) {
-            loadedImage = new Image(imageFile.toURI().toString());
+            loadedImage = new Image(imageFile.toURI().toString(), 300, 300, false, false);
 
 
             mainImageView.setImage(loadedImage);
@@ -52,6 +54,8 @@ public class HelloController {
             secondaryImageView.setPreserveRatio(true);
             secondaryImageView.setFitWidth(300);
             secondaryImageView.setFitHeight(300);
+
+            pixels = new int[(int) (loadedImage.getWidth() * loadedImage.getHeight())];
 
             greyScaleImage();
         }
@@ -122,6 +126,36 @@ public class HelloController {
             secondaryImageView.setImage(greyscaleImage);
         }
     }
+
+    public void createDisjointSet() {
+        Image image = mainImageView.getImage();
+
+        int width = (int) image.getWidth();
+        for (int i = 0; i < pixels.length; i++) {
+            if (pixels[i] != 0) { // if an index is black
+                if ((i + 1) % width != 0 && pixels[i + 1] != 0)
+                    union(pixels, i, i + 1); // union that index with the index to the right
+                if (i + width < pixels.length && pixels[i + width] != 0)
+                    union(pixels, i, i + width); // union index with the index below
+            }
+
+        }
+
+    }
+
+    public static int findCompress(int[] a, int id) {
+        while (a[id] != id) {
+            a[id] = a[a[id]]; //Compress path
+            id = a[id];
+        }
+        return id;
+    }
+
+    public  static void union(int[] a, int p, int q) {
+        a[findCompress(a, q)] = findCompress(a, p);
+    }
+
+
 
     @FXML
     private void processImage() {
