@@ -7,7 +7,8 @@ import javafx.scene.control.Slider;
 import javafx.scene.image.*;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
-import javafx.scene.image.Image;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 
 import java.io.File;
 
@@ -21,30 +22,38 @@ public class HelloController {
     private ImageView mainImageView;
     @FXML
     private ImageView secondaryImageView;
-
     @FXML
     private Slider toleranceSlider;
 
     int[] pixels;
+    private int lastClickedArgb = 0;
+
+
+    @FXML
+    private void initialize() {
+        toleranceSlider.setMin(0);  // Minimum tolerance
+        toleranceSlider.setMax(50000);  // Maximum tolerance, adjust as needed
+        toleranceSlider.setValue(25000);  // Default value
+
+        // Add a listener to the slider to update the black and white image when the slider value changes
+        toleranceSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            public void changed(ObservableValue<? extends Number> ov, Number old_val, Number new_val) {
+                if (loadedImage != null) {  // Only update if an image is loaded
+                    createBlackAndWhiteImage(lastClickedArgb);
+                }
+            }
+        });
+    }
 
     @FXML
     private void imageFileChooser() {
         FileChooser fileChooser = new FileChooser();
-
-        //set to images only
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files (*.png, *.jpeg, *.jpg", "*.png", "*.jpg", "*.jpeg"));
-
-        //file chooser title
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files (*.png, *.jpeg, *.jpg)", "*.png", "*.jpg", "*.jpeg"));
         fileChooser.setTitle("Open Image");
-
-        //selected image
         File imageFile = fileChooser.showOpenDialog(null);
 
-        //display image in image view
         if (imageFile != null) {
             loadedImage = new Image(imageFile.toURI().toString(), 300, 300, false, false);
-
-
             mainImageView.setImage(loadedImage);
             mainImageView.setPreserveRatio(true);
             mainImageView.setFitWidth(300);
@@ -56,11 +65,7 @@ public class HelloController {
             secondaryImageView.setFitHeight(300);
 
             pixels = new int[(int) (loadedImage.getWidth() * loadedImage.getHeight())];
-
-            greyScaleImage();
         }
-
-
     }
 
     @FXML
@@ -72,80 +77,56 @@ public class HelloController {
     private void mouseCoordinatesOnClick(MouseEvent event) {
         double x = event.getX();
         double y = event.getY();
-
-        //these convert the mouse click coordinates to ints because that what getArgb() likes
         int xInt = (int) x;
         int yInt = (int) y;
 
-        PixelReader pixelReader = loadedImage.getPixelReader();
-        if (xInt >= 0 && xInt <= 300 && yInt >= 0 && yInt <= 300) {  //makes sure mouse click is within image bounds
-            int argb = pixelReader.getArgb(xInt, yInt);
-
-            int alpha = (argb >> 24) & 0xFF;
-            int red = (argb >> 16) & 0xFF;
-            int green = (argb >> 8) & 0xFF;
-            int blue = argb & 0xFF;
-
-            System.out.print("x value is: " + xInt + "\ny value is: " + yInt + "\nargb value is: " + alpha + ", " + red + ", " + green + ", " + blue + "\n");
-        } else System.out.print("getArgb() is broken mate\n");
+        if (xInt >= 0 && xInt < loadedImage.getWidth() && yInt >= 0 && yInt < loadedImage.getHeight()) {
+            PixelReader pixelReader = loadedImage.getPixelReader();
+            lastClickedArgb = pixelReader.getArgb(xInt, yInt);  // Store the clicked color
+            createBlackAndWhiteImage(lastClickedArgb);
+        } else {
+            System.out.print("Click outside image bounds\n");
+        }
     }
 
-    @FXML
-    private void greyScaleImage() {
-        if (loadedImage != null) {
-            // Get the pixel reader from the loaded image
-            PixelReader pixelReader = loadedImage.getPixelReader();
 
-            // Create a writable image with the same dimensions as the loaded image
-            WritableImage greyscaleImage = new WritableImage((int) loadedImage.getWidth(), (int) loadedImage.getHeight());
-            PixelWriter pixelWriter = greyscaleImage.getPixelWriter();
+    private void createBlackAndWhiteImage(int referenceArgb) {
+        PixelReader pixelReader = loadedImage.getPixelReader();
+        WritableImage blackAndWhiteImage = new WritableImage((int) loadedImage.getWidth(), (int) loadedImage.getHeight());
+        PixelWriter pixelWriter = blackAndWhiteImage.getPixelWriter();
 
-            for (int y = 0; y < loadedImage.getHeight(); y++) {
-                for (int x = 0; x < loadedImage.getWidth(); x++) {
-                    // Get the ARGB values of the current pixel
-                    int argb = pixelReader.getArgb(x, y);
-
-                    // Extract the alpha, red, green, and blue components
-                    int alpha = (argb >> 24) & 0xFF;
-                    int red = (argb >> 16) & 0xFF;
-                    int green = (argb >> 8) & 0xFF;
-                    int blue = argb & 0xFF;
-
-                    // Calculate the greyscale value
-                    int greyscaleValue = (int) (0.299 * red + 0.587 * green + 0.114 * blue);
-
-                    // Create a new ARGB value with the greyscale value
-                    int greyscaleArgb = (alpha << 24) | (greyscaleValue << 16) | (greyscaleValue << 8) | greyscaleValue;
-
-                    // Write the new ARGB value to the new image
-                    pixelWriter.setArgb(x, y, greyscaleArgb);
+        int tolerance = (int) toleranceSlider.getValue();
+        for (int y = 0; y < loadedImage.getHeight(); y++) {
+            for (int x = 0; x < loadedImage.getWidth(); x++) {
+                int pixelArgb = pixelReader.getArgb(x, y);
+                int distance = Math.abs(pixelArgb - referenceArgb);
+                if (distance < tolerance) {
+                    pixelWriter.setArgb(x, y, 0xFFFFFFFF); // White
+                } else {
+                    pixelWriter.setArgb(x, y, 0xFF000000); // Black
                 }
             }
-
-            // Set the greyscale image to the main image view and changes button text
-            secondaryImageView.setImage(greyscaleImage);
         }
+
+        secondaryImageView.setImage(blackAndWhiteImage);
     }
 
     public void createDisjointSet() {
         Image image = mainImageView.getImage();
-
         int width = (int) image.getWidth();
         for (int i = 0; i < pixels.length; i++) {
-            if (pixels[i] != 0) { // if an index is black
+            if (pixels[i] != 0) {
                 if ((i + 1) % width != 0 && pixels[i + 1] != 0)
-                    union(pixels, i, i + 1); // union that index with the index to the right
+                    union(pixels, i, i + 1);
                 if (i + width < pixels.length && pixels[i + width] != 0)
-                    union(pixels, i, i + width); // union index with the index below
+                    union(pixels, i, i + width);
             }
-
         }
-
     }
 
     public static int findCompress(int[] a, int id) {
         while (a[id] != id) {
-            a[id] = a[a[id]]; //Compress path
+            a[id] = a[a[id]];
             id = a[id];
         }
         return id;
