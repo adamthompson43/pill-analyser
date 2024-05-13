@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="700.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.pillanalyser.HelloController">
+<BorderPane prefHeight="700.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.pillanalyser.PillController">
    <top>
       <MenuBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="19.0" prefWidth="1000.0" BorderPane.alignment="CENTER">
          <menus>
@@ -51,19 +51,6 @@
                </font>
             </Label>
             <Slider fx:id="toleranceSlider" prefHeight="30.0" prefWidth="263.0">
-               <VBox.margin>
-                  <Insets left="30.0" right="30.0" />
-               </VBox.margin>
-            </Slider>
-            <Label prefHeight="25.0" prefWidth="81.0" text="Noise">
-               <font>
-                  <Font size="18.0" />
-               </font>
-               <VBox.margin>
-                  <Insets left="30.0" top="10.0" />
-               </VBox.margin>
-            </Label>
-            <Slider fx:id="noiseSlider" prefHeight="30.0" prefWidth="263.0">
                <VBox.margin>
                   <Insets left="30.0" right="30.0" />
                </VBox.margin>
