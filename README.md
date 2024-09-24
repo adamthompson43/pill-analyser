@@ -1,4 +1,4 @@
-# Pill Anaylser
+# Pill Analyser
 
 This is a JavaFX project that analyses a picture of pills and groups them by their colours. This project was developed as part of CA1 for the Data Structures and Algorithms module at SETU.
 
