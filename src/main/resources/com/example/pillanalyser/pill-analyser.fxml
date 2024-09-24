@@ -52,9 +52,24 @@
             </Label>
             <Slider fx:id="toleranceSlider" prefHeight="30.0" prefWidth="263.0">
                <VBox.margin>
-                  <Insets left="30.0" right="30.0" />
+                  <Insets left="30.0" right="30.0" top="10.0" />
                </VBox.margin>
             </Slider>
+            <Label fx:id="nameLabel" prefHeight="17.0" prefWidth="150.0" text="Pill Name: ">
+               <VBox.margin>
+                  <Insets left="30.0" top="450.0" />
+               </VBox.margin>
+            </Label>
+            <Label fx:id="amountLabel" prefHeight="17.0" prefWidth="150.0" text="Amount: ">
+               <VBox.margin>
+                  <Insets left="30.0" top="10.0" />
+               </VBox.margin>
+            </Label>
+            <Label fx:id="sizeLabel" prefHeight="17.0" prefWidth="150.0" text="Average Size: ">
+               <VBox.margin>
+                  <Insets left="30.0" top="10.0" />
+               </VBox.margin>
+            </Label>
          </children>
       </VBox>
    </left>
